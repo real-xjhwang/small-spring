@@ -1,4 +1,4 @@
-package com.xjhwang.springframework.service;
+package com.xjhwang.springframework.bean;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,5 +1,6 @@
 package com.xjhwang.springframework.beans.factory.support;
 
+import com.xjhwang.springframework.beans.BeansException;
 import com.xjhwang.springframework.beans.factory.BeanFactory;
 import com.xjhwang.springframework.beans.factory.config.BeanDefinition;
 
@@ -23,6 +24,14 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
     }
 
     @SuppressWarnings("unchecked")
+    @Override
+    public <T> T getBean(String name, Class<T> requiredType) throws BeansException {
+
+        // FIXME 暂时先不实现
+        return (T)getBean(name);
+    }
+
+    @SuppressWarnings("unchecked")
     protected <T> T doGetBean(final String name, final Object[] args) {
 
         Object singleton = getSingleton(name);
@@ -33,7 +42,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
         return (T)createBean(name, beanDefinition, args);
     }
 
-    protected abstract BeanDefinition getBeanDefinition(String name);
+    protected abstract BeanDefinition getBeanDefinition(String beanName) throws BeansException;
 
     protected abstract Object createBean(String name, BeanDefinition beanDefinition, Object[] args);
 }

@@ -1,5 +1,6 @@
 package com.xjhwang.springframework.beans.factory.support;
 
+import com.xjhwang.springframework.beans.BeansException;
 import com.xjhwang.springframework.beans.factory.config.BeanDefinition;
 
 import java.lang.reflect.Constructor;
@@ -24,7 +25,7 @@ public class SimpleInstantiateStrategy implements InstantiationStrategy {
                 return beanClass.getDeclaredConstructor().newInstance();
             }
         } catch (InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException e) {
-            throw new RuntimeException("Failed to instantiate [" + beanClass.getName() + "]", e);
+            throw new BeansException("Failed to instantiate [" + beanClass.getName() + "]", e);
         }
     }
 }
