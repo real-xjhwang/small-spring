@@ -9,6 +9,10 @@ import com.xjhwang.springframework.beans.factory.config.BeanReference;
 import com.xjhwang.springframework.beans.factory.support.BeanDefinitionReader;
 import com.xjhwang.springframework.beans.factory.support.DefaultListableBeanFactory;
 import com.xjhwang.springframework.beans.factory.xml.XmlBeanDefinitionReader;
+import com.xjhwang.springframework.common.MyBeanFactoryPostProcessor;
+import com.xjhwang.springframework.common.MyBeanPostProcessor;
+import com.xjhwang.springframework.context.ApplicationContext;
+import com.xjhwang.springframework.context.support.ClassPathXmlApplicationContext;
 import com.xjhwang.springframework.core.io.DefaultResourceLoader;
 import com.xjhwang.springframework.core.io.Resource;
 import com.xjhwang.springframework.core.io.ResourceLoader;
@@ -87,5 +91,38 @@ public class ApiTests {
         // 获取Bean对象&调用
         UserService userService = beanFactory.getBean("userService", UserService.class);
         userService.queryUserInfo();
+    }
+
+    @Test
+    public void 基于BeanFactory测试两大增强接口() {
+
+        // 初始化BeanFactory
+        DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+
+        // 读取配置文件&注册Bean
+        BeanDefinitionReader beanDefinitionReader = new XmlBeanDefinitionReader(beanFactory);
+        beanDefinitionReader.loadBeanDefinitions("classpath:spring.xml");
+
+        // 3. BeanDefinition 加载完成 & Bean 实例化之前，修改 BeanDefinition 的属性值
+        MyBeanFactoryPostProcessor beanFactoryPostProcessor = new MyBeanFactoryPostProcessor();
+        beanFactoryPostProcessor.postProcessBeanFactory(beanFactory);
+
+        // 4. Bean 实例化之后，修改 Bean 属性信息
+        MyBeanPostProcessor beanPostProcessor = new MyBeanPostProcessor();
+        beanFactory.addBeanPostProcessor(beanPostProcessor);
+
+        // 5. 获取 Bean 对象调用方法
+        UserService userService = beanFactory.getBean("userService", UserService.class);
+        String result = userService.queryUserInfo();
+        System.out.println("测试结果：" + result);
+    }
+
+    @Test
+    public void 基于ApplicationContext测试两大接口() {
+
+        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring.xml");
+        UserService userService = applicationContext.getBean("userService", UserService.class);
+        String result = userService.queryUserInfo();
+        System.out.println("测试结果：" + result);
     }
 }

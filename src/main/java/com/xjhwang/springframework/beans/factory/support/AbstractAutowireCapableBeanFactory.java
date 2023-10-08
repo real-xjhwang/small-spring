@@ -5,6 +5,7 @@ import com.xjhwang.springframework.beans.PropertyValue;
 import com.xjhwang.springframework.beans.PropertyValues;
 import com.xjhwang.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import com.xjhwang.springframework.beans.factory.config.BeanDefinition;
+import com.xjhwang.springframework.beans.factory.config.BeanPostProcessor;
 import com.xjhwang.springframework.beans.factory.config.BeanReference;
 import com.xjhwang.springframework.util.BeanUtils;
 
@@ -19,18 +20,60 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
     private InstantiationStrategy instantiationStrategy = new CglibSubclassingInstantiationStrategy();
 
     @Override
-    protected Object createBean(String name, BeanDefinition beanDefinition, Object[] args) {
+    public Object applyBeanPostProcessorsBeforeInitialization(Object existingBean, String beanName) throws BeansException {
+
+        Object result = existingBean;
+        for (BeanPostProcessor beanPostProcessor : getBeanPostProcessors()) {
+            Object current = beanPostProcessor.postProcessBeforeInitialization(result, beanName);
+            // 1. 返回null表示让之后的 BeanPostProcessor 都不执行
+            // 2. 返回原始对象估计是为了防止getBean()拿不到对象
+            if (Objects.isNull(current)) {
+                return result;
+            }
+            result = current;
+        }
+        return result;
+    }
+
+    @Override
+    public Object applyBeanPostProcessorsAfterInitialization(Object existingBean, String beanName) throws BeansException {
+
+        Object result = existingBean;
+        for (BeanPostProcessor beanPostProcessor : getBeanPostProcessors()) {
+            Object current = beanPostProcessor.postProcessAfterInitialization(result, beanName);
+            if (Objects.isNull(current)) {
+                return result;
+            }
+            result = current;
+        }
+        return result;
+    }
+
+    public InstantiationStrategy getInstantiationStrategy() {
+
+        return instantiationStrategy;
+    }
+
+    public void setInstantiationStrategy(InstantiationStrategy instantiationStrategy) {
+
+        this.instantiationStrategy = instantiationStrategy;
+    }
+
+    @Override
+    protected Object createBean(String beanName, BeanDefinition beanDefinition, Object[] args) {
 
         Object bean;
         try {
-            bean = createBeanInstance(beanDefinition, name, args);
+            bean = createBeanInstance(beanDefinition, beanName, args);
             // 填充属性
-            applyPropertyValues(name, bean, beanDefinition);
+            applyPropertyValues(beanName, bean, beanDefinition);
+            // 执行Bean的初始化方法和BeanPostProcessor的前置和后置处理方法
+            bean = initializeBean(beanName, bean, beanDefinition);
         } catch (Exception e) {
             throw new BeansException("Instantiation of bean failed", e);
         }
 
-        addSingleton(name, bean);
+        addSingleton(beanName, bean);
         return bean;
     }
 
@@ -71,13 +114,19 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         }
     }
 
-    public InstantiationStrategy getInstantiationStrategy() {
+    private Object initializeBean(String beanName, Object bean, BeanDefinition beanDefinition) {
 
-        return instantiationStrategy;
+        // 1. 执行 BeanPostProcessor 前置处理方法
+        Object wrappedBean = applyBeanPostProcessorsBeforeInitialization(bean, beanName);
+
+        // 2.FIXME 执行Bean对象的初始化方法
+        invokeInitMethods(beanName, wrappedBean, beanDefinition);
+
+        // 3.执行 BeanPostProcessor 后置处理方法
+        wrappedBean = applyBeanPostProcessorsAfterInitialization(wrappedBean, beanName);
+
+        return wrappedBean;
     }
 
-    public void setInstantiationStrategy(InstantiationStrategy instantiationStrategy) {
-
-        this.instantiationStrategy = instantiationStrategy;
-    }
+    private void invokeInitMethods(String beanName, Object wrappedBean, BeanDefinition beanDefinition) throws BeansException {}
 }

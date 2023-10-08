@@ -12,4 +12,6 @@ import com.xjhwang.springframework.beans.factory.config.SingletonBeanRegistry;
 public interface ConfigurableListableBeanFactory extends ConfigurableBeanFactory, ListableBeanFactory, SingletonBeanRegistry {
 
     BeanDefinition getBeanDefinition(String beanName) throws BeansException;
+
+    void preInstantiateSingletons() throws BeansException;
 }
