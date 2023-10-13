@@ -1,9 +1,12 @@
 package com.xjhwang.springframework.bean;
 
+import com.xjhwang.springframework.beans.factory.DisposableBean;
+import com.xjhwang.springframework.beans.factory.InitializingBean;
+
 /**
  * @author xjhwang on 2023-09-28 14:12
  */
-public class UserService {
+public class UserService implements InitializingBean, DisposableBean {
 
     private String uid;
 
@@ -12,6 +15,23 @@ public class UserService {
     private String location;
 
     private UserDao userDao;
+
+    @Override
+    public void destroy() throws Exception {
+
+        System.out.println("执行：UserService.destroy");
+    }
+
+    @Override
+    public void afterPropertySet() throws Exception {
+
+        System.out.println("执行：UserService.afterPropertiesSet");
+    }
+
+    public String queryUserInfo() {
+
+        return userDao.queryUserName(uid);
+    }
 
     public String getUid() {
 
@@ -47,10 +67,5 @@ public class UserService {
     public void setUserDao(UserDao userDao) {
 
         this.userDao = userDao;
-    }
-
-    public String queryUserInfo() {
-
-        return userDao.queryUserName(uid);
     }
 }

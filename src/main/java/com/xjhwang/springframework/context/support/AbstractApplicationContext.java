@@ -33,24 +33,16 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
         beanFactory.preInstantiateSingletons();
     }
 
-    protected abstract void refreshBeanFactory() throws BeansException;
+    @Override
+    public void registerShutdownHook() {
 
-    protected abstract ConfigurableListableBeanFactory getBeanFactory();
-
-    private void invokeBeanFactoryPostProcessors(ConfigurableListableBeanFactory beanFactory) {
-
-        Map<String, BeanFactoryPostProcessor> beanFactoryPostProcessorMap = beanFactory.getBeansOfType(BeanFactoryPostProcessor.class);
-        for (BeanFactoryPostProcessor beanFactoryPostProcessor : beanFactoryPostProcessorMap.values()) {
-            beanFactoryPostProcessor.postProcessBeanFactory(beanFactory);
-        }
+        Runtime.getRuntime().addShutdownHook(new Thread(this::close));
     }
 
-    private void registerBeanPostProcessors(ConfigurableListableBeanFactory beanFactory) {
+    @Override
+    public void close() {
 
-        Map<String, BeanPostProcessor> beanPostProcessorMap = beanFactory.getBeansOfType(BeanPostProcessor.class);
-        for (BeanPostProcessor beanPostProcessor : beanPostProcessorMap.values()) {
-            beanFactory.addBeanPostProcessor(beanPostProcessor);
-        }
+        getBeanFactory().destroySingletons();
     }
 
     @Override
@@ -81,5 +73,25 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
     public <T> T getBean(String beanName, Class<T> requiredType) throws BeansException {
 
         return getBeanFactory().getBean(beanName, requiredType);
+    }
+
+    protected abstract void refreshBeanFactory() throws BeansException;
+
+    protected abstract ConfigurableListableBeanFactory getBeanFactory();
+
+    private void invokeBeanFactoryPostProcessors(ConfigurableListableBeanFactory beanFactory) {
+
+        Map<String, BeanFactoryPostProcessor> beanFactoryPostProcessorMap = beanFactory.getBeansOfType(BeanFactoryPostProcessor.class);
+        for (BeanFactoryPostProcessor beanFactoryPostProcessor : beanFactoryPostProcessorMap.values()) {
+            beanFactoryPostProcessor.postProcessBeanFactory(beanFactory);
+        }
+    }
+
+    private void registerBeanPostProcessors(ConfigurableListableBeanFactory beanFactory) {
+
+        Map<String, BeanPostProcessor> beanPostProcessorMap = beanFactory.getBeansOfType(BeanPostProcessor.class);
+        for (BeanPostProcessor beanPostProcessor : beanPostProcessorMap.values()) {
+            beanFactory.addBeanPostProcessor(beanPostProcessor);
+        }
     }
 }

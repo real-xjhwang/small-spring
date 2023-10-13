@@ -12,6 +12,7 @@ import com.xjhwang.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import com.xjhwang.springframework.common.MyBeanFactoryPostProcessor;
 import com.xjhwang.springframework.common.MyBeanPostProcessor;
 import com.xjhwang.springframework.context.ApplicationContext;
+import com.xjhwang.springframework.context.ConfigurableApplicationContext;
 import com.xjhwang.springframework.context.support.ClassPathXmlApplicationContext;
 import com.xjhwang.springframework.core.io.DefaultResourceLoader;
 import com.xjhwang.springframework.core.io.Resource;
@@ -124,5 +125,15 @@ public class ApiTests {
         UserService userService = applicationContext.getBean("userService", UserService.class);
         String result = userService.queryUserInfo();
         System.out.println("测试结果：" + result);
+    }
+
+    @Test
+    public void 测试初始化方法和销毁方法() {
+
+        ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring.xml");
+        UserService userService = applicationContext.getBean("userService", UserService.class);
+        String result = userService.queryUserInfo();
+        System.out.println("测试结果：" + result);
+        applicationContext.close();
     }
 }
