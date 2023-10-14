@@ -3,8 +3,7 @@ package com.xjhwang.springframework.beans.factory.support;
 import com.xjhwang.springframework.beans.BeansException;
 import com.xjhwang.springframework.beans.PropertyValue;
 import com.xjhwang.springframework.beans.PropertyValues;
-import com.xjhwang.springframework.beans.factory.DisposableBean;
-import com.xjhwang.springframework.beans.factory.InitializingBean;
+import com.xjhwang.springframework.beans.factory.*;
 import com.xjhwang.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import com.xjhwang.springframework.beans.factory.config.BeanDefinition;
 import com.xjhwang.springframework.beans.factory.config.BeanPostProcessor;
@@ -129,6 +128,19 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
     }
 
     private Object initializeBean(String beanName, Object bean, BeanDefinition beanDefinition) {
+
+        // invoke aware methods
+        if (bean instanceof Aware) {
+            if (bean instanceof BeanFactoryAware) {
+                ((BeanFactoryAware)bean).setBeanFactory(this);
+            }
+            if (bean instanceof BeanClassLoaderAware) {
+                ((BeanClassLoaderAware)bean).setBeanClassLoader(getBeanClassLoader());
+            }
+            if (bean instanceof BeanNameAware) {
+                ((BeanNameAware)bean).setBeanName(beanName);
+            }
+        }
 
         // 1. 执行 BeanPostProcessor 前置处理方法
         Object wrappedBean = applyBeanPostProcessorsBeforeInitialization(bean, beanName);

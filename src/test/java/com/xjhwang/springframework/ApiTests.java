@@ -136,4 +136,19 @@ public class ApiTests {
         System.out.println("测试结果：" + result);
         applicationContext.close();
     }
+
+    @Test
+    public void 测试感知接口() {
+
+        ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring.xml");
+        UserService userService = applicationContext.getBean("userService", UserService.class);
+        String result = userService.queryUserInfo();
+        System.out.println("测试结果：" + result);
+
+        System.out.println("ApplicationContext: " + userService.getApplicationContext());
+        System.out.println("beanFactory: " + userService.getBeanFactory());
+        System.out.println("beanClassLoader: " + userService.getBeanClassLoader());
+        System.out.println("beanName: " + userService.getBeanName());
+        applicationContext.close();
+    }
 }
