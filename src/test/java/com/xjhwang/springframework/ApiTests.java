@@ -1,5 +1,7 @@
 package com.xjhwang.springframework;
 
+import com.xjhwang.springframework.bean.CustomApplicationEventListener;
+import com.xjhwang.springframework.bean.CustomEvent;
 import com.xjhwang.springframework.bean.UserDao;
 import com.xjhwang.springframework.bean.UserService;
 import com.xjhwang.springframework.beans.PropertyValue;
@@ -12,6 +14,7 @@ import com.xjhwang.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import com.xjhwang.springframework.common.MyBeanFactoryPostProcessor;
 import com.xjhwang.springframework.common.MyBeanPostProcessor;
 import com.xjhwang.springframework.context.ApplicationContext;
+import com.xjhwang.springframework.context.ApplicationListener;
 import com.xjhwang.springframework.context.ConfigurableApplicationContext;
 import com.xjhwang.springframework.context.support.ClassPathXmlApplicationContext;
 import com.xjhwang.springframework.core.io.DefaultResourceLoader;
@@ -23,6 +26,8 @@ import org.openjdk.jol.info.ClassLayout;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 
 /**
  * @author xjhwang on 2023-09-28 14:11
@@ -178,5 +183,32 @@ public class ApiTests {
         // 2. 调用代理方法
         UserService userService = applicationContext.getBean("userService", UserService.class);
         System.out.println("测试结果：" + userService.queryUserInfo());
+    }
+
+    @Test
+    public void 测试泛型类型参数() {
+
+        ApplicationListener<CustomEvent> listener = new CustomApplicationEventListener();
+
+        Class<? extends ApplicationListener> listenerClass = listener.getClass();
+        Type[] genericInterfaces = listenerClass.getGenericInterfaces();
+        for (Type genericInterface : genericInterfaces) {
+            System.out.println("genericInterface: " + genericInterface);
+            if (genericInterface instanceof ParameterizedType) {
+                Type[] actualTypeArguments = ((ParameterizedType)genericInterface).getActualTypeArguments();
+                for (Type actualTypeArgument : actualTypeArguments) {
+                    System.out.println("actualTypeArgument: " + actualTypeArgument);
+                    String typeName = actualTypeArgument.getTypeName();
+                    System.out.println("typeName: " + typeName);
+                }
+            }
+        }
+    }
+
+    @Test
+    public void 测试事件机制() {
+        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring.xml");
+        applicationContext.publishEvent(new CustomEvent(applicationContext, 1019129009086763L, "成功了"));
+        applicationContext.registerShutdownHook();
     }
 }

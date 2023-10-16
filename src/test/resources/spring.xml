@@ -13,4 +13,8 @@
 
     <!-- <bean class="com.xjhwang.springframework.common.MyBeanFactoryPostProcessor"/> -->
     <!-- <bean class="com.xjhwang.springframework.common.MyBeanPostProcessor"/> -->
+
+    <bean id="customApplicationEventListener" class="com.xjhwang.springframework.bean.CustomApplicationEventListener" scope="singleton"/>
+    <bean id="contextClosedEventListener" class="com.xjhwang.springframework.bean.ContextClosedEventListener" scope="singleton"/>
+    <bean id="contextRefreshedEventListener" class="com.xjhwang.springframework.bean.ContextRefreshedEventListener" scope="singleton"/>
 </beans>

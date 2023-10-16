@@ -14,8 +14,7 @@ import java.util.Set;
 public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
 
     /**
-     * Internal marker for a null singleton object:<br/>
-     * used as marker value for concurrent maps (which don't support null values)
+     * Internal marker for a null singleton object:<br/> used as marker value for concurrent maps (which don't support null values)
      */
     protected static final Object NULL_OBJECT = new Object();
 
@@ -27,7 +26,6 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
         disposableBeans.put(beanName, disposableBean);
     }
 
-    @Override
     public void destroySingletons() {
         Set<String> disposableBeanNameSet = this.disposableBeans.keySet();
         String[] disposableBeanNames = disposableBeanNameSet.toArray(new String[0]);
@@ -49,8 +47,9 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
         return singletonObjects.get(name);
     }
 
-    protected void addSingleton(String name, Object singletonObject) {
+    @Override
+    public void registerSingleton(String beanName, Object singletonObject) {
 
-        singletonObjects.put(name, singletonObject);
+        singletonObjects.put(beanName, singletonObject);
     }
 }
