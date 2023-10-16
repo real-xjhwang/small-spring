@@ -9,6 +9,10 @@ import java.util.Objects;
  */
 public class BeanDefinition {
 
+    String SCOPE_SINGLETON = ConfigurableBeanFactory.SCOPE_SINGLETON;
+
+    String SCOPE_PROTOTYPE = ConfigurableBeanFactory.SCOPE_PROTOTYPE;
+
     private Class<?> beanClass;
 
     private PropertyValues propertyValues;
@@ -16,6 +20,12 @@ public class BeanDefinition {
     private String initMethodName;
 
     private String destroyMethodName;
+
+    private String scope = SCOPE_SINGLETON;
+
+    private boolean singleton = true;
+
+    private boolean prototype = false;
 
     public Class<?> getBeanClass() {
 
@@ -53,12 +63,28 @@ public class BeanDefinition {
         this.destroyMethodName = destroyMethodName;
     }
 
-    public BeanDefinition() {}
+    public void setScope(String scope) {
+
+        this.scope = scope;
+        this.singleton = SCOPE_SINGLETON.equals(scope);
+        this.prototype = SCOPE_PROTOTYPE.equals(scope);
+    }
+
+    public String getScope() {
+        return scope;
+    }
+
+    public boolean isSingleton() {
+        return singleton;
+    }
+
+    public boolean isPrototype() {
+        return prototype;
+    }
 
     public BeanDefinition(Class<?> beanClass) {
 
-        this.beanClass = beanClass;
-        this.propertyValues = new PropertyValues();
+        this(beanClass, new PropertyValues());
     }
 
     public BeanDefinition(Class<?> beanClass, PropertyValues propertyValues) {

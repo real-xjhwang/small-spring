@@ -19,6 +19,7 @@ import com.xjhwang.springframework.core.io.Resource;
 import com.xjhwang.springframework.core.io.ResourceLoader;
 import com.xjhwang.springframework.util.IoUtils;
 import org.junit.Test;
+import org.openjdk.jol.info.ClassLayout;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -150,5 +151,32 @@ public class ApiTests {
         System.out.println("beanClassLoader: " + userService.getBeanClassLoader());
         System.out.println("beanName: " + userService.getBeanName());
         applicationContext.close();
+    }
+
+    @Test
+    public void 测试Scope() {
+
+        ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring.xml");
+        UserService userService01 = applicationContext.getBean("userService", UserService.class);
+        UserService userService02 = applicationContext.getBean("userService", UserService.class);
+
+        System.out.println(userService01);
+        System.out.println(userService02);
+
+        System.out.println(userService01 + " 十六进制哈希：" + Integer.toHexString(userService01.hashCode()));
+        System.out.println(userService02 + " 十六进制哈希：" + Integer.toHexString(userService02.hashCode()));
+
+        System.out.println(ClassLayout.parseInstance(userService01).toPrintable());
+
+        applicationContext.close();
+    }
+
+    @Test
+    public void 测试FactoryBean() {
+        // 1.初始化 BeanFactory
+        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring.xml");
+        // 2. 调用代理方法
+        UserService userService = applicationContext.getBean("userService", UserService.class);
+        System.out.println("测试结果：" + userService.queryUserInfo());
     }
 }

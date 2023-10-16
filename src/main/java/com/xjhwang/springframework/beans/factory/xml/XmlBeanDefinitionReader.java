@@ -91,11 +91,16 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
             if (StringUtils.isEmpty(beanName)) {
                 beanName = StringUtils.lowerFirst(clazz.getSimpleName());
             }
+            // scope
+            String scope = bean.getAttribute("scope");
 
             // 定义bean
             BeanDefinition beanDefinition = new BeanDefinition(clazz);
             beanDefinition.setInitMethodName(initMethodName);
             beanDefinition.setDestroyMethodName(destroyMethodName);
+            if (StringUtils.isNotBlank(scope)) {
+                beanDefinition.setScope(scope);
+            }
 
             // 读取属性并填充
             for (int j = 0; j < bean.getChildNodes().getLength(); j++) {

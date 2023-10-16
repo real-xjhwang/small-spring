@@ -10,5 +10,15 @@ import com.xjhwang.springframework.beans.factory.HierarchicalBeanFactory;
  */
 public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, SingletonBeanRegistry {
 
+    /**
+     * 单例
+     */
+    String SCOPE_SINGLETON = "singleton";
+
+    /**
+     * 原型
+     */
+    String SCOPE_PROTOTYPE = "prototype";
+
     void addBeanPostProcessor(BeanPostProcessor beanPostProcessor);
 }
