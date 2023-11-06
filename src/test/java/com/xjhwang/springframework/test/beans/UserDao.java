@@ -1,4 +1,4 @@
-package com.xjhwang.springframework.bean;
+package com.xjhwang.springframework.test.beans;
 
 /**
  * @author xjhwang on 2023-09-28 16:55

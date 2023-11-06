@@ -1,9 +1,16 @@
-package com.xjhwang.springframework;
+package com.xjhwang.springframework.test;
 
-import com.xjhwang.springframework.bean.CustomApplicationEventListener;
-import com.xjhwang.springframework.bean.CustomEvent;
-import com.xjhwang.springframework.bean.UserDao;
-import com.xjhwang.springframework.bean.UserService;
+import com.xjhwang.springframework.aop.AdvisedSupport;
+import com.xjhwang.springframework.aop.Pointcut;
+import com.xjhwang.springframework.aop.TargetSource;
+import com.xjhwang.springframework.aop.aspectj.AspectJExpressionPointcut;
+import com.xjhwang.springframework.aop.framework.AopProxy;
+import com.xjhwang.springframework.aop.framework.Cglib2AopProxy;
+import com.xjhwang.springframework.test.aop.UserServiceInterceptor;
+import com.xjhwang.springframework.test.beans.CustomApplicationEventListener;
+import com.xjhwang.springframework.test.beans.CustomEvent;
+import com.xjhwang.springframework.test.beans.UserDao;
+import com.xjhwang.springframework.test.beans.UserService;
 import com.xjhwang.springframework.beans.PropertyValue;
 import com.xjhwang.springframework.beans.PropertyValues;
 import com.xjhwang.springframework.beans.factory.config.BeanDefinition;
@@ -11,8 +18,8 @@ import com.xjhwang.springframework.beans.factory.config.BeanReference;
 import com.xjhwang.springframework.beans.factory.support.BeanDefinitionReader;
 import com.xjhwang.springframework.beans.factory.support.DefaultListableBeanFactory;
 import com.xjhwang.springframework.beans.factory.xml.XmlBeanDefinitionReader;
-import com.xjhwang.springframework.common.MyBeanFactoryPostProcessor;
-import com.xjhwang.springframework.common.MyBeanPostProcessor;
+import com.xjhwang.springframework.test.common.MyBeanFactoryPostProcessor;
+import com.xjhwang.springframework.test.common.MyBeanPostProcessor;
 import com.xjhwang.springframework.context.ApplicationContext;
 import com.xjhwang.springframework.context.ApplicationListener;
 import com.xjhwang.springframework.context.ConfigurableApplicationContext;
@@ -26,8 +33,7 @@ import org.openjdk.jol.info.ClassLayout;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
 
 /**
  * @author xjhwang on 2023-09-28 14:11
@@ -210,5 +216,41 @@ public class ApiTests {
         ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:spring.xml");
         applicationContext.publishEvent(new CustomEvent(applicationContext, 1019129009086763L, "成功了"));
         applicationContext.registerShutdownHook();
+    }
+
+    @Test
+    public void 测试AOP表达式拦截() throws NoSuchMethodException {
+
+        AspectJExpressionPointcut pointcut = new AspectJExpressionPointcut("execution(* com.xjhwang.springframework.test.beans.UserService.*(..))");
+        Class<UserService> userServiceClass = UserService.class;
+        Method method = userServiceClass.getDeclaredMethod("queryUserInfo");
+
+        System.out.println(pointcut.matches(userServiceClass));
+        System.out.println(pointcut.matches(method, userServiceClass));
+    }
+
+    @Test
+    public void 测试动态代理() {
+        UserDao userDao = (UserDao)Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), new Class[] {UserDao.class},
+            ((proxy, method, args) -> "你被代理了！"));
+        String result = userDao.queryUserName("111");
+        System.out.println(result);
+    }
+
+    @Test
+    public void 测试AOP() {
+
+        UserService userService = new UserService();
+
+        // 组装代理信息
+        AdvisedSupport advisedSupport = new AdvisedSupport();
+        advisedSupport.setTargetSource(new TargetSource(userService));
+        advisedSupport.setMethodInterceptor(new UserServiceInterceptor());
+        advisedSupport.setMethodMatcher(new AspectJExpressionPointcut("execution(* com.xjhwang.springframework.test.beans.UserService.*(..))"));
+
+        // 代理对象
+        UserService proxy = (UserService)new Cglib2AopProxy(advisedSupport).getProxy();
+        // 调用测试
+        System.out.println(proxy.queryUserInfo());
     }
 }

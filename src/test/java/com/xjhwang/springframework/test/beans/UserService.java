@@ -1,4 +1,4 @@
-package com.xjhwang.springframework.bean;
+package com.xjhwang.springframework.test.beans;
 
 import com.xjhwang.springframework.beans.BeansException;
 import com.xjhwang.springframework.beans.factory.*;

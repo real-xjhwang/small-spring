@@ -1,4 +1,4 @@
-package com.xjhwang.springframework.common;
+package com.xjhwang.springframework.test.common;
 
 import com.xjhwang.springframework.beans.BeansException;
 import com.xjhwang.springframework.beans.PropertyValue;

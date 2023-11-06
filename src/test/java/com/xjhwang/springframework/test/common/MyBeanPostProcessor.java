@@ -1,6 +1,6 @@
-package com.xjhwang.springframework.common;
+package com.xjhwang.springframework.test.common;
 
-import com.xjhwang.springframework.bean.UserService;
+import com.xjhwang.springframework.test.beans.UserService;
 import com.xjhwang.springframework.beans.BeansException;
 import com.xjhwang.springframework.beans.factory.config.BeanPostProcessor;
 

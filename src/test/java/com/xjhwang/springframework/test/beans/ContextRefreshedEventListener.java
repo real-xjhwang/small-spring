@@ -1,4 +1,4 @@
-package com.xjhwang.springframework.bean;
+package com.xjhwang.springframework.test.beans;
 
 import com.xjhwang.springframework.context.ApplicationListener;
 import com.xjhwang.springframework.context.event.ContextRefreshedEvent;

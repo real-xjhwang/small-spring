@@ -2,19 +2,19 @@
 <beans>
     <!-- <bean id="userDao" class="com.xjhwang.springframework.bean.UserDao" init-method="initDataMethod" destroy-method="destroyDataMethod"/> -->
 
-    <bean id="userService" class="com.xjhwang.springframework.bean.UserService" scope="singleton">
+    <bean id="userService" class="com.xjhwang.springframework.test.beans.UserService" scope="singleton">
         <property name="uid" value="10001"/>
         <property name="company" value="腾讯"/>
         <property name="location" value="深圳"/>
         <property name="userDao" ref="proxyUserDao"/>
     </bean>
 
-    <bean id="proxyUserDao" class="com.xjhwang.springframework.bean.ProxyFactoryBean" scope="singleton"/>
+    <bean id="proxyUserDao" class="com.xjhwang.springframework.test.beans.ProxyFactoryBean" scope="singleton"/>
 
     <!-- <bean class="com.xjhwang.springframework.common.MyBeanFactoryPostProcessor"/> -->
     <!-- <bean class="com.xjhwang.springframework.common.MyBeanPostProcessor"/> -->
 
-    <bean id="customApplicationEventListener" class="com.xjhwang.springframework.bean.CustomApplicationEventListener" scope="singleton"/>
-    <bean id="contextClosedEventListener" class="com.xjhwang.springframework.bean.ContextClosedEventListener" scope="singleton"/>
-    <bean id="contextRefreshedEventListener" class="com.xjhwang.springframework.bean.ContextRefreshedEventListener" scope="singleton"/>
+    <bean id="customApplicationEventListener" class="com.xjhwang.springframework.test.beans.CustomApplicationEventListener" scope="singleton"/>
+    <bean id="contextClosedEventListener" class="com.xjhwang.springframework.test.beans.ContextClosedEventListener" scope="singleton"/>
+    <bean id="contextRefreshedEventListener" class="com.xjhwang.springframework.test.beans.ContextRefreshedEventListener" scope="singleton"/>
 </beans>
